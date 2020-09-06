@@ -1,0 +1,9 @@
+{
+  "username": "user",
+  "password": "pass",
+  "chromelocation": "/home/user/chrome/chrome",
+  "chromedriverlocation": "/home/user/chromedriver",
+  "mods": {
+    "99999": "mod.zip"
+  }
+}

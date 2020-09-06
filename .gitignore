@@ -1,3 +1,8 @@
+.idea
+config.json
+create-data-mod
+*.zip
+mods/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
