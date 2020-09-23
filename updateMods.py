@@ -73,7 +73,7 @@ def upload_new_mod_version(mod_id, filename, cookies):
     data_edit = {
         'ModId': mod_id,
         'ModName': existing_data['modName'],
-        'ModVisibility': 2,
+        'ModVisibility': 1,
         'GameTitleId': existing_data['gameTitleId'],
         'ModType': existing_data['modTypeId'],
         'Description': existing_data['description'],
