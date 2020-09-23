@@ -8,6 +8,7 @@ from pathlib import Path
 import requests
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 
 HEADERS = {
     'authority': 'api.ageofempires.com',
@@ -108,8 +109,13 @@ def get_cookie(config):
     password_box.send_keys(config.password)
     password_box.send_keys(Keys.RETURN)
     time.sleep(5)
-    yes_button = driver.find_element_by_id('idSIButton9')
-    yes_button.click()
+    try:
+        yes_button = driver.find_element_by_id('idSIButton9')
+        yes_button.click()
+    except NoSuchElementException:
+        print(f'current url: {driver.current_url}')
+        Path(__file__).with_name('error.png').write_bytes(driver.get_screenshot_as_png())
+        #sys.exit(1)
     time.sleep(10)
     cookie = driver.get_cookie('.AgeOfEmpiresServices')
     driver.quit()
