@@ -97,7 +97,7 @@ def upload_new_mod_version(mod_id, filename, cookies):
         print(f'Successfully updated mod {mod_id}.')
 
 
-def get_cookie(config):
+def get_cookies(config):
     driver = create_webdriver(config)
     driver.get('https://auth.ageofempires.com/')
     time.sleep(5)
@@ -117,16 +117,22 @@ def get_cookie(config):
         Path(__file__).with_name('error.png').write_bytes(driver.get_screenshot_as_png())
         #sys.exit(1)
     time.sleep(10)
-    cookie = driver.get_cookie('.AgeOfEmpiresServices')
+
+    cookies = {}
+    for i in range(10):
+        cookie_name = '.AgeOfEmpiresServices'
+        if i > 0:
+            cookie_name = f'.AgeOfEmpiresServicesC{i}'
+        single_cookie_result = driver.get_cookie(cookie_name)
+        if single_cookie_result is not None:
+            cookies[cookie_name] = single_cookie_result['value']
     driver.quit()
-    return cookie
+    return cookies
 
 
 def main():
     config = get_config()
-    cookie = get_cookie(config)
-
-    cookies = {'.AgeOfEmpiresServices': cookie['value']}
+    cookies = get_cookies(config)
 
     for mod_id in config.mods:
         upload_new_mod_version(mod_id, config.mods[mod_id], cookies)
