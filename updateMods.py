@@ -101,16 +101,16 @@ def get_cookies(config):
     driver = create_webdriver(config)
     driver.get('https://auth.ageofempires.com/')
     time.sleep(5)
-    search_box = driver.find_element_by_name('loginfmt')
+    search_box = driver.find_element('name', 'loginfmt')
     search_box.send_keys(config.username)
     search_box.send_keys(Keys.RETURN)
     time.sleep(5)
-    password_box = driver.find_element_by_name('passwd')
+    password_box = driver.find_element('name', 'passwd')
     password_box.send_keys(config.password)
     password_box.send_keys(Keys.RETURN)
     time.sleep(5)
     try:
-        yes_button = driver.find_element_by_id('idSIButton9')
+        yes_button = driver.find_element('id', 'idSIButton9')
         yes_button.click()
     except NoSuchElementException:
         print(f'current url: {driver.current_url}')
@@ -127,6 +127,7 @@ def get_cookies(config):
         if single_cookie_result is not None:
             cookies[cookie_name] = single_cookie_result['value']
     driver.quit()
+    Path(__file__).with_name('cookies.json').write_text(json.dumps(cookies))
     return cookies
 
 
