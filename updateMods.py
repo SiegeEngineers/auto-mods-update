@@ -27,30 +27,13 @@ HEADERS = {
 class Config:
     def __init__(self, json_path):
         config = json.loads(json_path.read_text())
-        self.username = config['username']
-        self.password = config['password']
-        self.chromelocation = config['chromelocation']
-        self.chromedriverlocation = config['chromedriverlocation']
         self.mods = config['mods']
-
-
-def create_webdriver(config):
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--window-size=1420,1080')
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--disable-gpu')
-    chrome_options.binary_location = config.chromelocation
-    prefs = {"profile.managed_default_content_settings.images": 2}
-    chrome_options.add_experimental_option("prefs", prefs)
-    driver = webdriver.Chrome(config.chromedriverlocation, options=chrome_options)
-    return driver
 
 
 def get_config():
     config_file = Path(__file__).with_name('config.json')
     if not config_file.exists():
-        print("Credentials file is missing")
+        print("Config file is missing")
         sys.exit()
     return Config(config_file)
 
@@ -98,37 +81,7 @@ def upload_new_mod_version(mod_id, filename, cookies):
 
 
 def get_cookies(config):
-    driver = create_webdriver(config)
-    driver.get('https://auth.ageofempires.com/')
-    time.sleep(5)
-    search_box = driver.find_element('name', 'loginfmt')
-    search_box.send_keys(config.username)
-    search_box.send_keys(Keys.RETURN)
-    time.sleep(5)
-    password_box = driver.find_element('name', 'passwd')
-    password_box.send_keys(config.password)
-    password_box.send_keys(Keys.RETURN)
-    time.sleep(5)
-    try:
-        yes_button = driver.find_element('id', 'idSIButton9')
-        yes_button.click()
-    except NoSuchElementException:
-        print(f'current url: {driver.current_url}')
-        Path(__file__).with_name('error.png').write_bytes(driver.get_screenshot_as_png())
-        #sys.exit(1)
-    time.sleep(10)
-
-    cookies = {}
-    for i in range(10):
-        cookie_name = '.AgeOfEmpiresServices'
-        if i > 0:
-            cookie_name = f'.AgeOfEmpiresServicesC{i}'
-        single_cookie_result = driver.get_cookie(cookie_name)
-        if single_cookie_result is not None:
-            cookies[cookie_name] = single_cookie_result['value']
-    driver.quit()
-    Path(__file__).with_name('cookies.json').write_text(json.dumps(cookies))
-    return cookies
+    return json.loads(Path(__file__).with_name('cookies.json').read_text())
 
 
 def main():

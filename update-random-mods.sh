@@ -28,4 +28,5 @@ zip -r ../../random-unit-costs.zip *
 cd ../..
 
 source ./venv/bin/activate
+./fetchCookie.py
 ./updateMods.py

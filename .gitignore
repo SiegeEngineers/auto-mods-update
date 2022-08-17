@@ -1,5 +1,7 @@
 .idea
 config.json
+cookies.json
+error.png
 create-data-mod
 *.zip
 mods/
