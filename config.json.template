@@ -1,6 +1,9 @@
 {
   "username": "user",
   "password": "pass",
+  "mail.username": "mailuser",
+  "mail.password": "mailpass",
+  "mail.hostname": "mailhostname",
   "chromelocation": "/home/user/chrome/chrome",
   "chromedriverlocation": "/home/user/chromedriver",
   "mods": {
