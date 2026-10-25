@@ -2,13 +2,10 @@
 import json
 import sys
 import time
-from datetime import datetime
+import datetime
 from pathlib import Path
 
 import requests
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 
 HEADERS = {
     'authority': 'api.ageofempires.com',
@@ -51,29 +48,32 @@ def get_mod_details(mod_id, cookies):
     return result.json()
 
 
-def upload_new_mod_version(mod_id, filename, cookies):
+def upload_new_mod_version(mod_id, filename, cookies, meta):
     existing_data = get_mod_details(mod_id, cookies)
-    today = datetime.utcnow().strftime('%Y-%m-%d')
+    today = datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d')
     data_edit = {
         'ModId': mod_id,
-        'ModName': existing_data['modName'],
+        'ModName': meta['modName'],
         'ModVisibility': 1,
         'GameTitleId': existing_data['gameTitleId'],
         'ModType': existing_data['modTypeId'],
-        'Description': existing_data['description'],
-        'ChangeList': f'<p>Version of {today}</p>',
+        'Description': meta['description'],
+        'ChangeList': f'<p>Updated for Game Update 185872</p>',
         'modTags': existing_data['modTags'],
         'ImageMetaData': json.dumps(existing_data['imageUrls']),
     }
-    zip_file = Path(__file__).with_name(filename)
+    zip_file = Path(__file__).parent.resolve() / 'build' / filename
     files = [
         ('modFiles', (filename, zip_file.open('rb'), 'application/zip'))
     ]
 
     url_edit = 'https://api.ageofempires.com/api/v1/mods/Edit'
+    # print(data_edit)
     result_edit = requests.post(url_edit, data=data_edit, headers=HEADERS, cookies=cookies, files=files)
-    if result_edit.status_code != 200:
-        print(f'Edit result status code was {result_edit.status_code}')
+    # print(result_edit.text)
+    errorCode = result_edit.json()['errorCode']
+    if errorCode != 0:
+        print(f'Edit result error code was {errorCode}')
         print(result_edit.text)
         sys.exit(1)
     else:
@@ -85,11 +85,16 @@ def get_cookies(config):
 
 
 def main():
+    now = datetime.datetime.now()
+    if now > datetime.datetime(2026, 9, 23):
+        print('pass die version an')
+        sys.exit()
     config = get_config()
     cookies = get_cookies(config)
+    meta = json.loads(Path(__file__).with_name('meta.json').read_text())
 
     for mod_id in config.mods:
-        upload_new_mod_version(mod_id, config.mods[mod_id], cookies)
+        upload_new_mod_version(mod_id, config.mods[mod_id], cookies, meta[mod_id])
 
 
 if __name__ == '__main__':
