@@ -118,12 +118,12 @@ def get_cookies(config, checker):
             print(driver.page_source)
             driver.find_element('id', "codeEntry-0")
             new_code = last_code
-            rounds = 24
+            rounds = 60
             print(f"last code was {last_code}")
             while new_code == last_code and rounds > 0:
                 print(f"checking for new code ({rounds})")
                 new_code = checker.get_latest_code()
-                time.sleep(5)
+                time.sleep(10)
                 rounds -= 1
             print(f"using code {new_code}")
             numbers = new_code.split()
