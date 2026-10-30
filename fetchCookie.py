@@ -82,40 +82,54 @@ def get_cookies(config, checker):
     driver.get('https://auth.ageofempires.com/')
     time.sleep(5)
     try:
-        print(driver.page_source)
+        print(driver.page_source.replace(">", ">\n"))
+        print("Looking for name=loginfmt")
         if len(driver.find_elements('name', 'loginfmt')):
             search_box = driver.find_element('name', 'loginfmt')
         else:
+            print("Did not find that")
+            print("Looking for id=usernameEntry instead")
             search_box = driver.find_element('id', 'usernameEntry')
+        print("Entering username")
         search_box.send_keys(config.username)
         search_box.send_keys(Keys.RETURN)
         time.sleep(5)
-        print(driver.page_source)
+        print(driver.page_source.replace(">", ">\n"))
+        print("Looking for span.fui-Link")
         my_element = driver.find_elements('css selector', 'span.fui-Link')
         if len(my_element):
             print('found span')
             print(my_element[0].get_attribute("innerText"))
+            print("clicking on it")
             my_element[0].click()
             time.sleep(5)
-            print(driver.page_source)
+            print(driver.page_source.replace(">", ">\n"))
+        print("Looking for span.fui-Link")
         my_element = driver.find_elements('css selector', 'span.fui-Link')
         if len(my_element) and my_element[0].get_attribute("innerText") == 'Ihr Kennwort verwenden':
-            print('found span again hrrm')
+            print('found span again hrrm and it says Ihr Kennwort verwenden')
             print(my_element[0].get_attribute("innerText"))
+            print("clicking on it")
             my_element[0].click()
             time.sleep(5)
-            print(driver.page_source)
+            print(driver.page_source.replace(">", ">\n"))
 
+        print("Looking for name=passwd")
         password_box = driver.find_element('name', 'passwd')
+        print("Entering password")
         password_box.send_keys(config.password)
         password_box.send_keys(Keys.RETURN)
         time.sleep(5)
-        print(driver.page_source)
+        print(driver.page_source.replace(">", ">\n"))
+        print("Looking for span.fui-Link")
         my_element = driver.find_elements('css selector', "span.fui-Link")
         if len(my_element) and my_element[0].get_attribute("innerText") == 'Code senden an mods@siegeengineers.org':
+            print("Found it and it says Code senden an mods@siegeengineers.org")
+            print("clicking on it")
             my_element[0].click()
             time.sleep(5)
-            print(driver.page_source)
+            print(driver.page_source.replace(">", ">\n"))
+            print("Looking for id=codeEntry-0")
             driver.find_element('id', "codeEntry-0")
             new_code = last_code
             rounds = 60
@@ -128,17 +142,23 @@ def get_cookies(config, checker):
             print(f"using code {new_code}")
             numbers = new_code.split()
             for i in range(len(numbers)):
+                print(f"Typing code {numbers[i]} into id=codeEntry-{i}")
                 input_element = driver.find_element('id', f"codeEntry-{i}")
                 input_element.send_keys(numbers[i])
             time.sleep(5)
-            print(driver.page_source)
+            print(driver.page_source.replace(">", ">\n"))
 
+        print("Looking for id=idSIButton9")
         if len(driver.find_elements('id', 'idSIButton9')):
+            print("found id=idSIButton9")
             yes_button = driver.find_element('id', 'idSIButton9')
         elif len(driver.find_elements('id', 'acceptButton')):
+            print("found id=acceptButton instead")
             yes_button = driver.find_element('id', 'acceptButton')
         else:
+            print("Looking for button[data-testid='primaryButton']")
             yes_button = driver.find_element('css selector', "button[data-testid='primaryButton']")
+        print("clicking on it")
         yes_button.click()
     except NoSuchElementException as e:
         print(f'current url: {driver.current_url}')
@@ -157,7 +177,8 @@ def get_cookies(config, checker):
             cookies[cookie_name] = single_cookie_result['value']
         print(cookies)
     driver.quit()
-    Path(__file__).with_name('cookies.json').write_text(json.dumps(cookies))
+    if cookies:
+        Path(__file__).with_name('cookies.json').write_text(json.dumps(cookies))
     return cookies
 
 
