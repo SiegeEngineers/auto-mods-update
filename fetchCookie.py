@@ -147,6 +147,7 @@ def get_cookies(config, checker):
     time.sleep(10)
 
     cookies = {}
+    print(driver.get_cookies())
     for i in range(10):
         cookie_name = '.AgeOfEmpiresServices'
         if i > 0:
@@ -154,6 +155,7 @@ def get_cookies(config, checker):
         single_cookie_result = driver.get_cookie(cookie_name)
         if single_cookie_result is not None:
             cookies[cookie_name] = single_cookie_result['value']
+        print(cookies)
     driver.quit()
     Path(__file__).with_name('cookies.json').write_text(json.dumps(cookies))
     return cookies
