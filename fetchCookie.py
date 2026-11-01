@@ -54,6 +54,13 @@ class MailChecker:
             self.mail.logout()
 
 
+def print_indented(text: str):
+    text = text.replace(">", ">\n")
+    lines = text.split("\n")
+    modified_lines = [f"\t{l}" for l in lines if l]
+    print("\n".join(modified_lines))
+
+
 def create_webdriver(config):
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('--no-sandbox')
@@ -82,7 +89,7 @@ def get_cookies(config, checker):
     driver.get('https://auth.ageofempires.com/')
     time.sleep(5)
     try:
-        print(driver.page_source.replace(">", ">\n"))
+        print_indented(driver.page_source)
         print("Looking for name=loginfmt")
         if len(driver.find_elements('name', 'loginfmt')):
             search_box = driver.find_element('name', 'loginfmt')
@@ -94,7 +101,7 @@ def get_cookies(config, checker):
         search_box.send_keys(config.username)
         search_box.send_keys(Keys.RETURN)
         time.sleep(5)
-        print(driver.page_source.replace(">", ">\n"))
+        print_indented(driver.page_source)
         print("Looking for span.fui-Link")
         my_element = driver.find_elements('css selector', 'span.fui-Link')
         if len(my_element):
@@ -103,7 +110,7 @@ def get_cookies(config, checker):
             print("clicking on it")
             my_element[0].click()
             time.sleep(5)
-            print(driver.page_source.replace(">", ">\n"))
+            print_indented(driver.page_source)
         print("Looking for span.fui-Link")
         my_element = driver.find_elements('css selector', 'span.fui-Link')
         if len(my_element) and my_element[0].get_attribute("innerText") == 'Ihr Kennwort verwenden':
@@ -112,7 +119,7 @@ def get_cookies(config, checker):
             print("clicking on it")
             my_element[0].click()
             time.sleep(5)
-            print(driver.page_source.replace(">", ">\n"))
+            print_indented(driver.page_source)
 
         print("Looking for name=passwd")
         password_box = driver.find_element('name', 'passwd')
@@ -120,15 +127,15 @@ def get_cookies(config, checker):
         password_box.send_keys(config.password)
         password_box.send_keys(Keys.RETURN)
         time.sleep(5)
-        print(driver.page_source.replace(">", ">\n"))
+        print_indented(driver.page_source)
         print("Looking for span.fui-Link")
         my_element = driver.find_elements('css selector', "span.fui-Link")
-        if len(my_element) and my_element[0].get_attribute("innerText") == 'Code senden an mods@siegeengineers.org':
-            print("Found it and it says Code senden an mods@siegeengineers.org")
+        if len(my_element) and 'mods@siegeengineers.org' in my_element[0].get_attribute("innerText"):
+            print(f"Found it and it says {my_element[0].get_attribute('innerText')}")
             print("clicking on it")
             my_element[0].click()
             time.sleep(5)
-            print(driver.page_source.replace(">", ">\n"))
+            print_indented(driver.page_source)
             print("Looking for id=codeEntry-0")
             driver.find_element('id', "codeEntry-0")
             new_code = last_code
@@ -146,7 +153,7 @@ def get_cookies(config, checker):
                 input_element = driver.find_element('id', f"codeEntry-{i}")
                 input_element.send_keys(numbers[i])
             time.sleep(5)
-            print(driver.page_source.replace(">", ">\n"))
+            print_indented(driver.page_source)
 
         print("Looking for id=idSIButton9")
         if len(driver.find_elements('id', 'idSIButton9')):
